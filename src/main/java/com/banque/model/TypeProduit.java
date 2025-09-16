@@ -2,18 +2,16 @@ package com.banque.model;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
+import java.util.*;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "TypeProduit")
 @Table(name = "type_produit")
-
 public class TypeProduit {
     @Id
     @SequenceGenerator(name = "typeproduit_sequence", sequenceName = "typeproduit_sequence", allocationSize = 1)
     @GeneratedValue(strategy = SEQUENCE, generator = "typeproduit_sequence")
-
     @Column(name = "id")
     private Long id;
 
@@ -25,6 +23,11 @@ public class TypeProduit {
 
     @Column(name = "cotisation_carte", nullable = true, columnDefinition = "FLOAT")
     private float cotisationCarte;
+
+    // Création du lien OneToManby côté NON propriétaire
+    // mappedBy contient le nom de l'attribut ManyToOne dans ProduitBancaire
+    @OneToMany(mappedBy = "typeProduit", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<ProduitBancaire> produitsBancaires=new ArrayList<>();
 
     public TypeProduit() {
     }
@@ -66,7 +69,22 @@ public class TypeProduit {
     public void setCotisationCarte(float cotisationCarte) {
         this.cotisationCarte = cotisationCarte;
     }
+    public List<ProduitBancaire> getProduitsBancaires() {return produitsBancaires;}
 
+    public void setProduitsBancaires(List<ProduitBancaire> produitsBancaires) {
+
+        this.produitsBancaires = produitsBancaires;
+
+    }
+    public void addProduitBancaire(ProduitBancaire produitBancaire)
+    {
+        this.produitsBancaires.add(produitBancaire);
+    }
+    public void removeProduitBancaire(ProduitBancaire produitBancaire)
+    {
+        this.produitsBancaires.remove(produitBancaire);
+        produitBancaire.setTypeProduit(null);
+    }
     @Override
     public String toString() {
         return "TypeProduit{" +
@@ -87,5 +105,17 @@ public class TypeProduit {
     @Override
     public int hashCode() {
         return Objects.hash(tauxInteretAgios, intitule, cotisationCarte);
+    }
+
+    @PreRemove
+    private void gererLiens()
+    {
+        // Pour casser le lien avec les types de produits
+        // A utiliser dans le cas d'une cardinalité minimale 0
+        for (ProduitBancaire pb : produitsBancaires)
+        {
+            pb.setTypeProduit(null);
+        }
+        produitsBancaires.clear();
     }
 }
