@@ -64,10 +64,9 @@ public class PersonneMorale extends Personne {
     }
 
     @PreRemove
-    private void gererLien(){
-        if(typePersonneMorale != null){
-            typePersonneMorale.getPersonnesMorale().remove(this);
-        }
-        typePersonneMorale = null;
+    private void gererLiensPM()
+    {
+        if (typePersonneMorale!=null)typePersonneMorale.getPersonnesMorale().remove(this);
+        typePersonneMorale=null;
     }
 }
