@@ -1,6 +1,9 @@
 package com.banque.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
@@ -22,6 +25,10 @@ public class ProduitBancaire {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_produit_id")
     private TypeProduit typeProduit;
+
+    @OneToMany(mappedBy = "produitBancaire", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Operation> operations = new ArrayList<>();
+
     public ProduitBancaire(float solde_courant, String numeroCompte, TypeProduit TypeProduit) {
         this.solde_courant = solde_courant;
         this.numeroCompte = numeroCompte;
@@ -53,6 +60,23 @@ public class ProduitBancaire {
     }
     public void setNumeroCompte(String numeroCompte) {
         this.numeroCompte = numeroCompte;
+    }
+
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
+    }
+
+    public void addOperation(Operation op) {
+        this.operations.add(op);
+    }
+
+    public void removeOperation(Operation op) {
+        this.operations.remove(op);
+        op.setProduitBancaire(null);
+    }
+
+    public List<Operation> getOperations() {
+        return operations;
     }
 
     @Override

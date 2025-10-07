@@ -25,7 +25,8 @@ public class BanqueApplication
     @Bean
     CommandLineRunner testerBackend(TypeProduitRepository typeProduitRepository, ProduitBancaireRepository produitBancaireRepository,
                                     PersonnePhysiqueRepository personnePhysiqueRepository, TypePersonneMoraleRepository typePersonneMoraleRepository,
-                                    ClientBancaireRepository clientBancaireRepository, PersonneMoraleRepository personneMoraleRepository)
+                                    ClientBancaireRepository clientBancaireRepository, PersonneMoraleRepository personneMoraleRepository,
+                                    OperationRepository operationRepository)
     {
         return args -> {
             List<TypeProduit> typesProduits;
@@ -73,7 +74,7 @@ public class BanqueApplication
                 System.out.println("pb3 n''existe plus");
             }
 
-
+/*
             // Création de produits bancaires
             tp2= typeProduitRepository.findById(tp2.getId()).orElseThrow();
             pb2 = new ProduitBancaire(1,"num4",tp2);
@@ -136,6 +137,39 @@ public class BanqueApplication
                     "\nLes personnes morales" +
                     "***********************************************************");
             System.out.println(personneMoraleRepository.findAll());
+*/
+
+
+            // Création Operation
+            TypeProduit tp = new TypeProduit(10, "typeProduit1",100);
+            typeProduitRepository.save(tp);
+            ProduitBancaire pb = new ProduitBancaire(10, "123456", tp);
+            produitBancaireRepository.save(pb);
+
+            Operation op1 = new Operation(12,"op1","operation1");
+            Operation op2 = new Operation(13,"op2","operation2");
+            pb.addOperation(op1);
+            operationRepository.save(op1);
+            operationRepository.save(op2);
+            produitBancaireRepository.save(pb);
+
+            // Modification
+            var affichageOp1 = operationRepository.findById(op1.getId());
+            System.out.println("**************************************" + "\n" + affichageOp1.toString() + "Avant changement");
+            op1.setLibelle("OPERATION 1");
+            operationRepository.save(op1);
+            affichageOp1 =  operationRepository.findById(op1.getId());
+            System.out.println("**************************************" + "\n" + affichageOp1.toString() + "Après changement");
+
+            // Delete de op1
+            System.out.println(pb.getOperations());
+            pb = produitBancaireRepository.findById(pb.getId()).orElseThrow();
+            //produitBancaireRepository.deleteById(pb.getId());
+            op1 = operationRepository.findById(op1.getId()).orElseThrow();
+            operationRepository.deleteById(op1.getId());
+            System.out.println("op1 existe ?" + operationRepository.existsById(op1.getId()));
+            System.out.println("op2 existe ?" + operationRepository.existsById(op2.getId()));
+            System.out.println("pb existe ?" + produitBancaireRepository.existsById(pb.getId()));
         };
     }
 }
