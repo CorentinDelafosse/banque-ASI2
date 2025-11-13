@@ -5,10 +5,7 @@ import com.banque.service.TypeProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +31,22 @@ public class TypeProduitRestController {
         return new ResponseEntity<TypeProduit>(cg, HttpStatus.OK);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<TypeProduit> addTypeProduit(@RequestBody TypeProduit typeProduit){
+        TypeProduit tp = typeProduitService.createTypeProduit(typeProduit);
+        return new ResponseEntity<TypeProduit>(tp, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<TypeProduit> updateTypeProduit(@RequestBody TypeProduit typeProduit){
+        TypeProduit tp = typeProduitService.updateTypeProduit(typeProduit);
+        return new ResponseEntity<TypeProduit>(tp, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteTypeProduit(@PathVariable("id") Long idTypeProduit){
+        typeProduitService.deleteTypeProduitById(idTypeProduit);
+        return new ResponseEntity<String>("Suppression OK", HttpStatus.OK);
+    }
 
 }
